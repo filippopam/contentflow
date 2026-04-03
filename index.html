@@ -153,7 +153,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .fc-username{font-size:11px;font-weight:700;color:#000;line-height:1.2;}
 .fc-subtext{font-size:10px;color:#999;}
 .mock-ig .fc-media,.mock-fb .fc-media{width:100%;overflow:hidden;position:relative;}
-.mock-ig .fc-media{aspect-ratio:1/1;}
+.mock-ig .fc-media{aspect-ratio:4/5;}
 .mock-fb .fc-media{aspect-ratio:16/9;}
 .mock-ig .fc-media img,.mock-ig .fc-media video,.mock-fb .fc-media img,.mock-fb .fc-media video{width:100%;height:100%;object-fit:cover;display:block;}
 .mock-ig .fc-media-empty,.mock-fb .fc-media-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:40px;}
@@ -697,14 +697,14 @@ function buildCarouselSlider(slides, aspectStyle, idPrefix){
       ?'<video src="'+s.media_url+'" style="width:100%;height:100%;object-fit:cover;" muted playsinline loop></video>'
       :'<img src="'+s.media_url+'" style="width:100%;height:100%;object-fit:cover;" alt="">')+'</div>';
   }).join('');
-  var dotsHtml=slides.length>1?slides.map(function(_,i){return'<span class="carousel-dot'+(i===0?' active':'')+'" onclick="cSlide(\''+sid+'\','+i+')"></span>';}).join(''):'';
+  var dotsHtml=slides.length>1?slides.map(function(_,i){return'<span class="carousel-dot'+(i===0?' active':'')+'" onclick="cSlide(event,\''+sid+'\','+i+')"></span>';}).join(''):'';
   return '<div class="carousel-slider" id="'+sid+'">'+
     (slides.length>1?'<span class="carousel-counter">1 / '+slides.length+'</span>':'')+
     '<div class="carousel-track" id="'+sid+'_t">'+slidesHtml+'</div>'+
-    (slides.length>1?'<button class="carousel-btn prev" onclick="cMove(\''+sid+'\',-1)">‹</button><button class="carousel-btn next" onclick="cMove(\''+sid+'\',1)">›</button>':'')+
+    (slides.length>1?'<button class="carousel-btn prev" onclick="cMove(event,\''+sid+'\',-1)">‹</button><button class="carousel-btn next" onclick="cMove(event,\''+sid+'\',1)">›</button>':'')+
   '</div>'+(dotsHtml?'<div class="carousel-dots" id="'+sid+'_d">'+dotsHtml+'</div>':'');
 }
-function cMove(sid,dir){
+function cMove(e,sid,dir){if(e&&e.stopPropagation)e.stopPropagation();
   var t=document.getElementById(sid+'_t');if(!t)return;
   var n=t.querySelectorAll('.cs-slide').length;
   var cur=((+t.dataset.cur||0)+dir+n)%n;
@@ -712,7 +712,7 @@ function cMove(sid,dir){
   var co=document.querySelector('#'+sid+' .carousel-counter');if(co)co.textContent=(cur+1)+' / '+n;
   var de=document.getElementById(sid+'_d');if(de)de.querySelectorAll('.carousel-dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});
 }
-function cSlide(sid,idx){
+function cSlide(e,sid,idx){if(e&&e.stopPropagation)e.stopPropagation();
   var t=document.getElementById(sid+'_t');if(!t)return;
   t.dataset.cur=idx;t.style.transform='translateX(-'+idx+'00%)';
   var n=t.querySelectorAll('.cs-slide').length;
@@ -760,7 +760,7 @@ function buildFeedCard(post){
       (isC?'<span style="margin-left:auto;font-size:14px;">⧉</span>':'')+
       '</div>'+mediaHtml('1/1')+
       '<div class="fc-actions"><span class="fc-action-icon">🤍</span><span class="fc-action-icon">💬</span><span class="fc-action-icon">🔗</span></div>'+
-      '<div class="fc-caption"><strong>'+(post.owner||'tu_cuenta')+'</strong> '+copyShort+'</div>'+
+      '<div class="fc-caption" id="cap_'+cid+'">'+'<strong>'+(post.owner||'tu_cuenta')+'</strong> <span class="cap-text" id="captxt_'+cid+'">'+copyShort+'</span>'+(post.copy&&post.copy.length>80?'<span class="cap-more" onclick="event.stopPropagation();toggleCap(\''+cid+'\',\''+encodeURIComponent(post.copy||'')+'\')" style="color:#00376b;cursor:pointer;"> ...más</span>':'')+'</div>'+
       (hashShort?'<div class="fc-hashtags">'+hashShort+'</div>':'')+
     '</div>';
   } else if(pl==='TikTok'){
@@ -1128,6 +1128,7 @@ function refresh(){
 // ── INIT ───────────────────────────────────────────────────────────────────
 feedMonth=new Date();calMonth=new Date();
 fetchPosts();
+function toggleCap(cid,enc){var el=document.getElementById("captxt_"+cid);var btn=document.querySelector("#cap_"+cid+" .cap-more");if(!el)return;var full=decodeURIComponent(enc);if(el.dataset.expanded==="1"){el.textContent=full.substring(0,80)+(full.length>80?"\u2026":"");el.dataset.expanded="0";if(btn)btn.textContent=" ...m\u00e1s";}else{el.textContent=full;el.dataset.expanded="1";if(btn)btn.textContent=" menos";}}
 </script>
 </body>
 </html>
