@@ -697,11 +697,11 @@ function buildCarouselSlider(slides, aspectStyle, idPrefix){
       ?'<video src="'+s.media_url+'" style="width:100%;height:100%;object-fit:cover;" muted playsinline loop></video>'
       :'<img src="'+s.media_url+'" style="width:100%;height:100%;object-fit:cover;" alt="">')+'</div>';
   }).join('');
-  var dotsHtml=slides.length>1?slides.map(function(_,i){return'<span class="carousel-dot'+(i===0?' active':'')+'" onclick="cSlide(event,\''+sid+'\','+i+')"></span>';}).join(''):'';
+  var dotsHtml=slides.length>1?slides.map(function(_,i){return'<span class="carousel-dot'+(i===0?' active':'')+'" onclick="event.stopPropagation();cSlide(event,\''+sid+'\','+i+')"></span>';}).join(''):'';
   return '<div class="carousel-slider" id="'+sid+'">'+
     (slides.length>1?'<span class="carousel-counter">1 / '+slides.length+'</span>':'')+
     '<div class="carousel-track" id="'+sid+'_t">'+slidesHtml+'</div>'+
-    (slides.length>1?'<button class="carousel-btn prev" onclick="cMove(event,\''+sid+'\',-1)">‹</button><button class="carousel-btn next" onclick="cMove(event,\''+sid+'\',1)">›</button>':'')+
+    (slides.length>1?'<button class="carousel-btn prev" onclick="event.stopPropagation();cMove(event,\''+sid+'\',-1)">‹</button><button class="carousel-btn next" onclick="event.stopPropagation();cMove(event,\''+sid+'\',1)">›</button>':'')+
   '</div>'+(dotsHtml?'<div class="carousel-dots" id="'+sid+'_d">'+dotsHtml+'</div>':'');
 }
 function cMove(e,sid,dir){if(e&&e.stopPropagation)e.stopPropagation();
