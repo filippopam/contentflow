@@ -988,6 +988,7 @@ function renderCarouselThumbs(){
 }
 
 // ── SAVE POST ──────────────────────────────────────────────────────────────
+function sanitizeFileName(name){return name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"_").replace(/_+/g,"_").substring(0,80);}
 async function savePost(){
   var title=document.getElementById('f-title').value.trim();
   var date=document.getElementById('f-date').value;
@@ -1007,7 +1008,7 @@ async function savePost(){
     // Upload single file if new
     if(pendingFile){
       showLoading('Subiendo archivo... (1/1)');
-      var path='posts/'+(postId||'new')+'/'+(Date.now())+'_'+pendingFile.name;
+      var path='posts/'+(postId||'new')+'/'+(Date.now())+'_'+sanitizeFileName(pendingFile.name);
       mediaUrl=await uploadFile(pendingFile, path);
       mediaType=pendingFile.type;
     }
@@ -1051,7 +1052,7 @@ async function savePost(){
       for(var i=0;i<pendingSlideFiles.length;i++){
         var sf=pendingSlideFiles[i];
         showLoading('Subiendo slide '+(i+1)+' de '+pendingSlideFiles.length+'...');
-        var spath='posts/'+savedId+'/carousel/'+Date.now()+'_'+i+'_'+sf.file.name;
+        var spath='posts/'+savedId+'/carousel/'+Date.now()+'_'+i+'_'+sanitizeFileName(sf.file.name);
         var surl=await uploadFile(sf.file, spath);
         allSlides.push({url:surl,media_type:sf.file.type,pos:pendingSlideUrls.length+i});
       }
